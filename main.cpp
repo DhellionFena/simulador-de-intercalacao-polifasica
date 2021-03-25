@@ -120,30 +120,39 @@ int trocar_bloco(int *cont_especial, std::list<char> &bloco, std::string &file_n
     return 1;
 }
 
-int menorValor(char *vetor)
+int menorValor(char *vetor,int *cont_compara)
 {
-    std::cout << "PRIMEIRO INDICE: " << vetor[0] << "\nSEGUNDO INDICE: " << vetor[1] << '\n';
     //retorna indice com menor valor
-    if (vetor[0] != '#' && vetor[1] != '#')
-    {
-        if (vetor[0] <= vetor[1] && vetor[0] != '#')
-        {
-            return 0;
-        }
-        else if (vetor[1] <= vetor[0] && vetor[1] != '#')
-        {
-            return 1;
-        }
-    }
-    else if (vetor[0] == '#' && vetor[1] != '#')
-    {
-
-        return 1;
-    }
-    else if (vetor[0] != '#' && vetor[1] == '#')
-    {
-        return 0;
-    }
+    if(vetor[0] != '\0' && vetor[1] != '\0'){
+    	if (vetor[0] != '#' && vetor[1] != '#')
+	    {
+	        if (vetor[0] <= vetor[1] && vetor[0] != '#')
+	        {
+	            return 0;
+	        }
+	        else if (vetor[1] <= vetor[0] && vetor[1] != '#')
+	        {
+	            return 1;
+	        }
+	    }
+	    else if (vetor[0] == '#' && vetor[1] != '#')
+	    {
+	
+	        return 1;
+	    }
+	    else if (vetor[0] != '#' && vetor[1] == '#')
+	    {
+	        return 0;
+	    }
+	}else if(vetor[0] == '\0' && vetor[1] != '\0'){
+		return 1;
+	}else if(vetor[1] == '\0' && vetor[0] != '\0'){
+		return 0;
+	}else{
+		return 3;
+	}
+	
+	    
 }
 
 int main(void)
@@ -153,14 +162,17 @@ int main(void)
     std::list<char> bloco;
     std::string file_name = "fita1.txt";
     std::string auxFile, file1, file2, file_vazio;
-
+	
     // Resetando as fitas
     reset_fita("fita1.txt");
     reset_fita("fita2.txt");
     reset_fita("fita3.txt");
 
     tam = getInput(input);
-
+	
+	for(int i=0;i<tam;i++){
+		std::cout << input[i];
+	}
     heap[0] = input[0];
     heap[1] = input[1];
     heap[2] = input[2];
@@ -232,13 +244,15 @@ int main(void)
     file1 = "fita1.txt";
     file2 = "fita2.txt";
     file_vazio = "fita3.txt";
-
+    
     while (1)
     {
-        std::cout << "CONT_COMPARA: " << cont_compara[0] << " " << cont_compara[1] << "\n";
-        compara[0] = ler_caracter(file1, cont_compara[0]);
-        compara[1] = ler_caracter(file2, cont_compara[1]);
-
+        
+        
+        	compara[0] = ler_caracter(file1, cont_compara[0]);
+        	compara[1] = ler_caracter(file2, cont_compara[1]);
+		
+        	
         if (compara[0] == '#' && compara[1] == '#')
         {
 
@@ -255,24 +269,27 @@ int main(void)
             else if (tempc[0] == '\0')
             {
                 // Acabou fita 1 e ainda tem resto na fita 2
+                
+                grava_char('\0', file_vazio);
                 cont_compara[0] = 0;
                 cont_compara[1]++;
                 auxFile = file_vazio; // file3
-                file_vazio = file1;   // file1
-                file1 = auxFile;      //file3
-                grava_char('\0', file1);
+                file_vazio = file1; // file1
+                file1 = auxFile; //file3
                 reset_fita(file_vazio);
+                
             }
             else if (tempc[1] == '\0')
             {
                 // Acabou fita 2 e ainda tem resto na fita 1
+                grava_char('\0', file_vazio);
                 cont_compara[1] = 0;
                 cont_compara[0]++;
                 auxFile = file_vazio;
                 file_vazio = file2;
                 file2 = auxFile;
-                grava_char('\0', file2);
                 reset_fita(file_vazio);
+                
             }
             else
             {
@@ -285,13 +302,17 @@ int main(void)
         }
         else
         {
-            temp = menorValor(compara);
-            std::cout << "Valor compara[0]: " << compara[0] << std::endl;
-            std::cout << "Valor compara[1]: " << compara[1] << std::endl;
-            std::cout << "Valor temp: " << temp << std::endl;
-            std::cout << "O menor valor foi: " << compara[temp] << "\n\n";
+            temp = menorValor(compara,cont_compara);
+            if(temp == 3){
+            	reset_fita(file1);
+                reset_fita(file2);
+            	break;
+			}else{
             grava_char(compara[temp], file_vazio);
+			
             cont_compara[temp]++;
+			}
+            
         }
     }
 }
